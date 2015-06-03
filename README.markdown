@@ -1,16 +1,15 @@
-# Threading-Macros
+# cl-threading-macros
+
+Implementation of clojure threading macros, like -> or ->>
 
 ## Usage
 
-## Installation
+    (-> 5 (+ 2) (+ 3))
+    => 10
 
 ## Author
 
 * Hector Orellana (hofm92@gmail.com)
-
-## Copyright
-
-Copyright (c) 2014 Hector Orellana (hofm92@gmail.com)
 
 ## License
 

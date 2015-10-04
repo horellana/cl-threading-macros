@@ -2,8 +2,15 @@
 (defpackage threading-macros
   (:use :cl)
 	(:export :->>)
-	(:export :->))
+	(:export :->)
+	(:export :-<>))
 (in-package :threading-macros)
+
+(defmacro -<> (value &body transformations)
+  (if (null transformations)
+      value
+      `(let ((<> ,value))
+	 (-<> ,(car transformations) ,@(cdr transformations)))))
 
 (defmacro define-threading-macro (name action)
 	(let ((transformations (gensym))

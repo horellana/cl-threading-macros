@@ -1,29 +1,31 @@
 (in-package :cl-user)
 (defpackage threading-macros
   (:use :cl)
-	(:export :->>)
-	(:export :->)
-	(:export :-<>))
+  (:import-from :alexandria
+		:once-only)
+  (:export :->)
+  (:export :-<>))
 (in-package :threading-macros)
 
+(defun change-symbol (original new list)
+  (cond
+    ((null list) nil)
+    ((listp (car list)) (cons (change-symbol original new (car list))
+			      (change-symbol original new (cdr list))))
+    (t (cons (if (eq (car list) original)
+		 new
+		 (car list))
+	     (change-symbol original new (cdr list))))))
+
 (defmacro -<> (value &body transformations)
-  (if (null transformations)
-      value
-      `(let ((<> ,value))
-	 (-<> ,(car transformations) ,@(cdr transformations)))))
+  (once-only (value)
+    (let ((s (intern "<>")))
+      (if transformations
+	  `(-<> ,(change-symbol s value (car transformations)) ,@(cdr transformations))
+	  value))))
 
-(defmacro define-threading-macro (name action)
-	(let ((transformations (gensym))
-				(value (gensym)))
-		`(defmacro ,name (,value &rest ,transformations)
-			 (reduce #'(lambda (a b) ,action)
-							 ,transformations
-							 :initial-value ,value))))
-
-(define-threading-macro ->>
-		`(,@b ,a))
-
-(define-threading-macro ->
-		`(,(car b) ,a ,@(cdr b)))
-
-;; blah blah blah.
+(defmacro -> (value &body transformations)
+  (let ((s (intern "<>")))
+    `(-<> ,value
+       ,@(mapcar #'(lambda (trans) (append trans (list s)))
+		 transformations))))

@@ -16,7 +16,7 @@
   :version "0.1"
   :author "Hector Orellana"
   :license "GPL3"
-  :depends-on ()
+  :depends-on (:alexandria)
   :components ((:module "src"
                 :components
                 ((:file "threading-macros"))))

@@ -4,6 +4,7 @@
   (:import-from :alexandria
 		:once-only)
   (:export :->)
+  (:export :->>)
   (:export :-<>))
 (in-package :threading-macros)
 
@@ -28,4 +29,10 @@
   (let ((s (intern "<>")))
     `(-<> ,value
        ,@(mapcar #'(lambda (trans) `(,(car trans) ,s ,@(cdr trans)))
+		 transformations))))
+
+(defmacro ->> (value &body transformations)
+  (let ((s (intern "<>")))
+    `(-<> ,value
+       ,@(mapcar #'(lambda (trans) (append trans (list s)))
 		 transformations))))

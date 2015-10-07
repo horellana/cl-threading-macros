@@ -27,5 +27,5 @@
 (defmacro -> (value &body transformations)
   (let ((s (intern "<>")))
     `(-<> ,value
-       ,@(mapcar #'(lambda (trans) (append trans (list s)))
+       ,@(mapcar #'(lambda (trans) `(,(car trans) ,s ,@(cdr trans)))
 		 transformations))))

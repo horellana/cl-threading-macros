@@ -18,9 +18,12 @@
   (let ((<> (intern "<>")))
     (if transformations
 	`(let ((,<> ,value))
-	   ,(if (deep-search <> (car transformations))
-		`(-<> ,(car transformations) ,@(cdr transformations))
-		`(-<> (,@(car transformations) ,<>) ,@(cdr transformations))))
+	   ,(let* ((head (car transformations))
+		   (tail (cdr transformations))
+		   (position-p (deep-search <> head)))
+	      (if position-p
+		  `(-<> ,head ,@tail)
+		  `(-<> (,(car head) ,<> ,@(cdr head)) ,@tail))))
 	value)))
 
 (defmacro -> (value &body transformations)

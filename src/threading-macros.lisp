@@ -22,15 +22,13 @@
 		  (tail (cdr transformations)))
 	      (cond
 		((atom head) `(-<> ,(list head <>) ,@tail))
+		((eq (car head) 'function) `(-<> (funcall (function ,(second head)) ,<>) ,@tail))
 		((deep-search <> head) `(-<> ,head ,@tail))
 		(t `(-<> (,(car head) ,<> ,@(cdr head)) ,@tail)))))
 	value)))
 
 (defmacro -> (value &body transformations)
-  (let ((<> (intern "<>")))
-    `(-<> ,value
-       ,@(mapcar #'(lambda (trans) `(,(car trans) ,<> ,@(cdr trans)))
-		 transformations))))
+  `(-<> ,value ,@transformations))
 
 (defmacro ->> (value &body transformations)
   (let ((<> (intern "<>")))
